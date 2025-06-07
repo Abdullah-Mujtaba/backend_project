@@ -1,0 +1,10 @@
+Middleware is basically functionality that we want to run between 2 blocks
+example: if a user hits the url /insta and the response that we are giving him is
+hi hello
+so between that we want to check if the user is logged in or is he an admin so we will put middlewares
+(functions) in between that check those requirements and then send the response to save our resources
+
+(err,req,res,next) this is how we used to write the parameters, the first one is err, the second is 
+the req that was recieved and the third one is the res the thing that we want to send
+the last bit is a next flag which is used between middlewares they pass this flag on to denote that
+their work is done 
