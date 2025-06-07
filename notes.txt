@@ -8,3 +8,27 @@ so between that we want to check if the user is logged in or is he an admin so w
 the req that was recieved and the third one is the res the thing that we want to send
 the last bit is a next flag which is used between middlewares they pass this flag on to denote that
 their work is done 
+
+
+****************************
+Brcypt library helps to hash the passwords so they are not visible as simple strings
+Bcrypt hashes passwords so they are stored as irreversible hashes in the database.
+👉 Even if someone gets access to the DB, they cannot recover the original password.
+👉 The server can still verify passwords by hashing the entered password and comparing it.
+
+✅ In short: hashes passwords for secure storage.
+
+***********************************
+jsonwebtoken tokenizes our data so that it is not freely visible it uses cryptography to do that
+JWT is not mainly about hiding data — it is about securely transmitting and verifying data.
+
+👉 JWT does not encrypt the data (unless you use JWT with encryption — which is less common).
+
+👉 JWT is signed → the signature proves that the token has not been tampered with.
+
+👉 Anyone who gets the token can read the payload (unless you separately encrypt it).
+
+👉 But the payload cannot be modified because the server will detect an invalid signature.
+jsonwebtoken is used to create signed tokens that securely transmit information between client and server.
+The token's payload is readable but cannot be modified without invalidating the signature.
+It is mainly used for authentication — to verify that requests are coming from an authorized user.
