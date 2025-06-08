@@ -28,6 +28,9 @@ app.use(cookieParser())
 
 //routes import
 import userRouter from './routes/user.routes.js'
+//→ You are importing that default export → the router object → and assigning it the name userRouter in this file.
+
+//👉 The name userRouter does not have to match the name router in the other file — you can choose any name when importing a default export
 
 //routes declaration
 app.use("/api/v1/users",userRouter)
