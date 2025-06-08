@@ -32,3 +32,8 @@ JWT is not mainly about hiding data — it is about securely transmitting and ve
 jsonwebtoken is used to create signed tokens that securely transmit information between client and server.
 The token's payload is readable but cannot be modified without invalidating the signature.
 It is mainly used for authentication — to verify that requests are coming from an authorized user.
+
+
+************
+jwt is a bearer token, whoever has the token is sent the data 
+strong secruity 
