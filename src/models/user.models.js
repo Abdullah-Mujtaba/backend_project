@@ -78,7 +78,7 @@ userSchema.pre("save", async function(next) {
     {
             return next()
     }
-    this.password = brcypt.hash(this.password, 10)
+    this.password = await brcypt.hash(this.password, 10)
     next()
 })
 
@@ -118,10 +118,6 @@ userSchema.methods.generateRefreshToken = function(){
     }    
     )
 }
-
-
-
-
 
 
 export const User = mongoose.model('User', userSchema)

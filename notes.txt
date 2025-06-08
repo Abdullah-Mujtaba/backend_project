@@ -37,3 +37,10 @@ It is mainly used for authentication — to verify that requests are coming from
 ************
 jwt is a bearer token, whoever has the token is sent the data 
 strong secruity 
+
+
+******************
+using cloudinary to upload files and multer
+multer is how the user uploads the files cloudinary is just there to save the file
+get file from multer save it temporary and then save it on cloudinary
+we do that because we want to have a reupload chance
