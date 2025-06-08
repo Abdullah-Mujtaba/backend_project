@@ -22,4 +22,22 @@ app.use(express.static("public")) //we have done this because we want to store s
 //so we are telling the app that this where we want to save those, we are saving on the server
 app.use(cookieParser())
 
+
+//cant use app.get because now we have sepeprated routers and controllers if we were using the normal
+//approach app.get that would make us use router and controller in the same function
+
+//routes import
+import userRouter from './routes/user.routes.js'
+
+//routes declaration
+app.use("/api/v1/users",userRouter)
+//how this works is that when the user hits the url
+//it gives the controller to userRouter which was imported from routes so it goes inside that file
+////http://localhost:8000/api/v1/users/register this is what becomes
+
+//note: that once we do this we dont have to import it again and again we dont have to bother
+//with app.use again and again 
+
+
+
 export {app}

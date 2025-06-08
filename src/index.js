@@ -1,9 +1,14 @@
 import dotenv from "dotenv" // we import this because we want the environment variables to be available to everyone as soon as possible 
 // import express from "express"
 import connectDB from "./db/index.js";
+import {app} from "./app.js"
+
 dotenv.config({
     path: './env'
 })
+
+
+
 
 //Error [ERR_UNSUPPORTED_DIR_IMPORT]: Directory import 'C:\backend_project\src\db' is not supported resolving ES modules imported from C:\backend_project\src\index.js
 //when this happens look at the import statements
