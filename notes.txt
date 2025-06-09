@@ -90,3 +90,10 @@ Security: Important to use flags like HttpOnly, Secure, SameSite for protecting 
 an array was being returned because of me using .find and not using .findOne which would have returned the first object that is why
 we were getting an error
 Security: Important to use flags like HttpOnly, Secure, SameSite for protecting cookies from XSS, CSRF, and other attacks.
+
+
+
+*******************FORM-DATA-NOTE-POSTMAN*************************
+the reason we got this error was Cannot destructure property 'username' of 'req.body' as it is undefined.
+this was happening becuase we were sending form data which we did not use in login we plainly sent json data
+to enable form data we have to use multer a middleware which helps in that
