@@ -49,7 +49,6 @@ we do that because we want to have a reupload chance
 
 
 
-<<<<<<< Updated upstream
 ************************req.files******************************
 [Object: null prototype] {
   avatar: [
@@ -72,9 +71,7 @@ this wont work because yes req.files does exist but coverImage does not exist so
 
 
 *********COOKIES***********
-=======
 *********COOKIES***************
->>>>>>> Stashed changes
 Summary of Cookies:
 What are Cookies: Small pieces of data stored in the browser that are sent between the client and server.
 
@@ -82,7 +79,6 @@ Role:
 Authentication: Used to store tokens (e.g., JWT) or session IDs.
 Session Management: Cookies help maintain the user’s session on the server.
 Stateful: Cookies can store user preferences and other state-related data.
-<<<<<<< Updated upstream
 Security: Important to use flags like HttpOnly, Secure, SameSite for protecting cookies from XSS, CSRF, and other attacks.
 
 
@@ -93,6 +89,4 @@ Security: Important to use flags like HttpOnly, Secure, SameSite for protecting 
 //isPasswordCorrect is not a function had to use the first object of that array which was the schema type which can access the methods
 an array was being returned because of me using .find and not using .findOne which would have returned the first object that is why
 we were getting an error
-=======
 Security: Important to use flags like HttpOnly, Secure, SameSite for protecting cookies from XSS, CSRF, and other attacks.
->>>>>>> Stashed changes
