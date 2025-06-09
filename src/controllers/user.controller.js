@@ -115,7 +115,7 @@ const registerUser =  asyncHandler(async (req,res) =>
 })
 
 
-
+//works fine look at notes and the comments
 const loginUser = asyncHandler(async(req,res)=>
 {
     //look at the data that is coming,
@@ -133,13 +133,20 @@ const loginUser = asyncHandler(async(req,res)=>
 
     //database in another continent will take time so use await
     //code stops here for the async function and wont run untill the data is returned
-    const userData = await User.find({$or: [{username},{email}]}) //find if the user exists with the username or email
+    const userData = await User.findOne({$or: [{username},{email}]}) //find if the user exists with the username or email
+    console.log(userData) //look at notes IMPORTANT
+    /**
+     * //this was returning an array of objects so that is why we were facing the issue that 
+        //isPasswordCorrect is not a function had to use the first object of that array which was the schema type which can access the methods
+        an array was being returned because of me using .find and not using .findOne which would have returned the first object that is why
+        we were getting an error
+     */
     if(!userData)
     {
         throw new ApiError(404, "User does not exist")
     }
     //the functions that we have defined can be ran by the userData not the User itself
-    const isPasswordValid = await userData.isPasswordCorrect(password)
+    const isPasswordValid = await userData.isPasswordCorrect(password) 
     //isPasswordValid will have a bool value
     if(!isPasswordValid)
     {
@@ -160,7 +167,7 @@ const loginUser = asyncHandler(async(req,res)=>
         secure: true
     }
 
-    return res.status(200)
+    return res.status(200) //we are able to do res.cookie because we used cookieparser a middleware
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken,options) //we can chain as many cookies we want 
     .json(
@@ -169,18 +176,33 @@ const loginUser = asyncHandler(async(req,res)=>
                 user: loggedInUser,accessToken,refreshToken
             }, "User logged in successfully")
     )
-
+    //for cookies look at the notes that have been created
 })
 
 
 const logoutUser = asyncHandler(async(req,res)=>
 {
-    
+    //req.user._id //we are able to do this because of the middleware which added user to the req
+    await User.findByIdAndUpdate(req.user._id,
+    {
+        $set: {refreshToken: undefined},
+    },
+    {
+        new: true //the returned response will have the new value
+    })
+
+    const options = 
+    {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res.status(200).clearCookie("accessToken",options).clearCookie("refreshToken",options).json(new ApiResponse(200, {}, "User logged out"))
+
 })
 
 //export const registerUser
-export {registerUser} //this works
-export {loginUser}
+export {registerUser, loginUser, logoutUser} //this works
 
 /**
  * the reason was that we wrote const after export which meant that the statement

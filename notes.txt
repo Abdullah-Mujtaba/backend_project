@@ -9,6 +9,8 @@ the req that was recieved and the third one is the res the thing that we want to
 the last bit is a next flag which is used between middlewares they pass this flag on to denote that
 their work is done 
 
+Middlewares are mostly used in routes (jaate hoye mujh se milke jaana)
+
 
 ****************************
 Brcypt library helps to hash the passwords so they are not visible as simple strings
@@ -47,6 +49,7 @@ we do that because we want to have a reupload chance
 
 
 
+<<<<<<< Updated upstream
 ************************req.files******************************
 [Object: null prototype] {
   avatar: [
@@ -65,3 +68,31 @@ we do that because we want to have a reupload chance
 this is the output of req.files now if the coverImage does not exist then this line 
 const coverImageLocalPath= req.files?.coverImage[0]?.path
 this wont work because yes req.files does exist but coverImage does not exist so it becomes undefined and we get an error
+
+
+
+*********COOKIES***********
+=======
+*********COOKIES***************
+>>>>>>> Stashed changes
+Summary of Cookies:
+What are Cookies: Small pieces of data stored in the browser that are sent between the client and server.
+
+Role:
+Authentication: Used to store tokens (e.g., JWT) or session IDs.
+Session Management: Cookies help maintain the user’s session on the server.
+Stateful: Cookies can store user preferences and other state-related data.
+<<<<<<< Updated upstream
+Security: Important to use flags like HttpOnly, Secure, SameSite for protecting cookies from XSS, CSRF, and other attacks.
+
+
+
+
+****************LINE 137 user.controller.js***************88
+//this was returning an array of objects so that is why we were facing the issue that 
+//isPasswordCorrect is not a function had to use the first object of that array which was the schema type which can access the methods
+an array was being returned because of me using .find and not using .findOne which would have returned the first object that is why
+we were getting an error
+=======
+Security: Important to use flags like HttpOnly, Secure, SameSite for protecting cookies from XSS, CSRF, and other attacks.
+>>>>>>> Stashed changes

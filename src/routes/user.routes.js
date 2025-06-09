@@ -1,7 +1,7 @@
 import {Router} from "express";
-import { registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
-
+import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router()
 
 
@@ -24,5 +24,15 @@ router.route("/register").post(
 
 //here is my take, data from postman or wtv will be handled by the middleware first then
 //handled by the function that I have called
+
+router.route("/login").post(loginUser) //run loginUser when this url is hit
+
+
+//secured routers
+router.route("/logout").post(
+    verifyJWT, logoutUser //this is how we use the middleware that we have made
+    //the next helps in executing logoutUser that is why we wrote next() in the end
+    //in middlewares that we have made we just pass the reference
+)
 
 export default router
