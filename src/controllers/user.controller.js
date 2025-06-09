@@ -7,6 +7,28 @@ import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 
+
+const generateTokens = async function(userId)
+{
+    try {
+        const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
+
+        user.refreshToken = refreshToken
+        await user.save({validateBeforeSave: false}) //what it means is that whenever we try to save
+        //something in database it will kick in and ask for required fields again which we dont have
+        //and dont have so to avoid that and only give it the field that we want to give
+        //we use this
+
+        return {accessToken, refreshToken}
+
+    } catch (error) {
+        throw new ApiError(500, "Something went wrong while generating tokens")
+    }
+}
+
+
 // usually 4 parameters error,req,res,next
 
 //*************** FLOW FOR REGISTRATION************** */
@@ -93,9 +115,72 @@ const registerUser =  asyncHandler(async (req,res) =>
 })
 
 
+
+const loginUser = asyncHandler(async(req,res)=>
+{
+    //look at the data that is coming,
+    //if the user exists in db
+    //password check
+    //give him a accessToken
+    //if it expires give him a refresh token
+    //send cookies
+
+    const {username, email,password} = req.body //the way we take data from the body
+    if(!username && !email )
+    {
+        throw new ApiError(400,"username or email required")
+    }
+
+    //database in another continent will take time so use await
+    //code stops here for the async function and wont run untill the data is returned
+    const userData = await User.find({$or: [{username},{email}]}) //find if the user exists with the username or email
+    if(!userData)
+    {
+        throw new ApiError(404, "User does not exist")
+    }
+    //the functions that we have defined can be ran by the userData not the User itself
+    const isPasswordValid = await userData.isPasswordCorrect(password)
+    //isPasswordValid will have a bool value
+    if(!isPasswordValid)
+    {
+        throw new ApiError(401,"Invalid Password")
+    }
+
+    //whichever thing takes time use await for that 
+    const {accessToken,refreshToken} = await generateTokens(userData._id)
+
+    //have to see if database call is expensive or not
+    const loggedInUser = await User.findById(userData._id).select("-password -refreshToken")
+    //this gives everything apart from what we hvae told in the select field that do not
+    //send password and refreshToken
+
+    const options = 
+    {
+        httpOnly: true, //now the cookies can be only modified by the server and not the frontend
+        secure: true
+    }
+
+    return res.status(200)
+    .cookie("accessToken", accessToken, options)
+    .cookie("refreshToken", refreshToken,options) //we can chain as many cookies we want 
+    .json(
+        new ApiResponse(200,
+            {
+                user: loggedInUser,accessToken,refreshToken
+            }, "User logged in successfully")
+    )
+
+})
+
+
+const logoutUser = asyncHandler(async(req,res)=>
+{
+    
+})
+
 //export const registerUser
 export {registerUser} //this works
-
+export {loginUser}
 
 /**
  * the reason was that we wrote const after export which meant that the statement

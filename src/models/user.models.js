@@ -88,6 +88,7 @@ userSchema.pre("save", async function(next) {
 //with the encrypted password
 userSchema.methods.isPasswordCorrect = async function(password)
 {
+    //this.password is available when we use this it will have context
     return await brcypt.compare(password, this.password)
 }
 
