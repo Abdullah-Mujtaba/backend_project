@@ -44,3 +44,24 @@ using cloudinary to upload files and multer
 multer is how the user uploads the files cloudinary is just there to save the file
 get file from multer save it temporary and then save it on cloudinary
 we do that because we want to have a reupload chance
+
+
+
+************************req.files******************************
+[Object: null prototype] {
+  avatar: [
+    {
+      fieldname: 'avatar',
+      originalname: 'download.png',
+      encoding: '7bit',
+      mimetype: 'image/png',
+      destination: './public/temp',
+      filename: 'download.png',
+      path: 'public\\temp\\download.png',
+      size: 3372
+    }
+  ]
+}
+this is the output of req.files now if the coverImage does not exist then this line 
+const coverImageLocalPath= req.files?.coverImage[0]?.path
+this wont work because yes req.files does exist but coverImage does not exist so it becomes undefined and we get an error

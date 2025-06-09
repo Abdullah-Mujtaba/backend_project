@@ -26,19 +26,33 @@ const registerUser =  asyncHandler(async (req,res) =>
     //for url data we need to do something else
     //using postman to send data
     const {fullName, email, username, password} = req.body
-    console.log("email: ", email);
+  
     const errorMessage = validateFields(fullName,email,username,password)
     if(errorMessage)
     {
         throw new ApiError(404,errorMessage)
     }
-    const userExistance = userExists(email,username)
+
+    //the issue why the promise was pending because we did not call await and the function was not going forward was due to this
+    const userExistance = await userExists(username,email) //the issue that I had was that i was passing the parameters in the wrong order resulting in mongoDB not returning anything
+    console.log(userExistance)
+
     if(userExistance)
     {
         throw new ApiError(409,userExistance)
     }
+
+
     const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath= req.files?.coverImage[0]?.path
+    //console.log(req.files)
+    // const coverImageLocalPath= req.files?.coverImage[0]?.path //can cause issue because what we are saying is that once we get req.files if that exists then see if coverImage exists
+    //because req.files is an object which returns arrays of with the field names that we have defined and inside them we have arrays, look at notes file
+    //using simple if else we can resolve the issue
+    let coverImageLocalPath;
+    if(req.files && Array.isArray(req.files.coverImage) && req.files.coverImage.length > 0)
+    {   
+        coverImageLocalPath = req.files.coverImage[0].path
+    }
 
     if(!avatarLocalPath)
     {

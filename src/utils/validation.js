@@ -20,15 +20,18 @@ const validateFields = function(fullName, email, username, password)
     }
 }
 
-const userExists = function(username,email)
+//forgot to add await in User.findOne that is why it was not working and returning nothing
+
+
+//the parameters must be in the same order when calling the function otherwise we will get an error the db query wont run properly
+const userExists = async function(username,email)
 {
-    const message = User.findOne({
-        $or: [{email},{username}]
+    const message = await User.findOne({
+        $or: [{username},{email}]
     })
-    if(message)
-    {
-        return "User with the same email or username already exists"
-    }
+    
+    return "User with the same username and email exists"
+
 }
 
 
