@@ -354,8 +354,79 @@ const updateCoverImage = asyncHandler( async (req,res) =>
     return res.status(200).json(new ApiResponse(200,user, "Cover Image uploaded succesfully"))
 })
 
+
+const getUserChannelProfile = asyncHandler(async (req,res)=> 
+{
+    const {user} = req.params //doing this because we are taking the username through the url
+    if(!user?.trim())
+    {
+        throw new ApiError(400, "Invalid username")
+    }
+    
+    const channel = await User.aggregate({
+        $match: {username: user?.toLowerCase()} //got result of documents with the same user
+    },
+    {
+        $lookup:
+        {   
+            from: "subscriptions",
+            localField: "_id",
+            foreignField: "channel",
+            as:"subscribers"
+        },
+        
+    },
+    {
+        $lookup:
+        {
+            from:"subscriptions",
+            localField: "_id",
+            foreignField: "subscriber",
+            as:"subscribedTo"
+        }
+    },
+    {
+        $addFields:
+        {
+            subscribersCout: {$size:"$subscribers"},
+            channelsSubscribedToCount: {$size:"$subscribedTo"},
+            isSubscribed:{
+                $cond:{
+                    if: {$in: [req.user?._id, "$subscribers.subscriber"]},
+                    then: true,
+                    else: false
+                }
+            } 
+
+        }
+    },
+    {
+        $project:
+        {
+            fullName:1,
+            username:1,
+            subscribersCout:1,
+            channelsSubscribedToCount:1,
+            avatar:1,
+            coverImage:1,
+            email:1,
+            isSubscribed:1
+        }
+    }
+)
+    if(!channel?.length)
+    {
+        throw new ApiError(404, "Channel does not exist")
+    }
+
+    return res.status(200).json(new ApiResponse(200,channel[0], "User Channel Fetched successfully"))
+
+})
+
+
+
 //export const registerUser
-export {registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateUser, updateUserAvatar, updateCoverImage} //this works
+export {registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateUser, updateUserAvatar, updateCoverImage, getUserChannelProfile} //this works
 
 /**
  * the reason was that we wrote const after export which meant that the statement
