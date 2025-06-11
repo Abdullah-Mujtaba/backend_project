@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, refreshAccessToken } from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router()
@@ -34,5 +34,7 @@ router.route("/logout").post(
     //the next helps in executing logoutUser that is why we wrote next() in the end
     //in middlewares that we have made we just pass the reference
 )
+
+router.route("/refresh-token").post(refreshAccessToken)
 
 export default router

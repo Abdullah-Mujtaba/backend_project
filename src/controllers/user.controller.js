@@ -5,7 +5,7 @@ import { userExists } from "../utils/validation.js";
 import {uploadOnCloundinary} from "../utils/cloundnary.js"
 import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import jwt from "jsonwebtoken"
 
 
 const generateTokens = async function(userId)
@@ -201,8 +201,49 @@ const logoutUser = asyncHandler(async(req,res)=>
 
 })
 
+
+const refreshAccessToken = asyncHandler(async (req,res) => 
+{
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+    if(!incomingRefreshToken)
+    {
+        throw new ApiError(401, "Unauthorized Request")
+    }
+
+    try {
+        const decodedToken = jwt.verify(incomingRefreshToken,process.env.REFRESH_TOKEN_SECRET)
+    
+        const user = await User.findById(decodedToken._id)
+        if(!user)
+        {
+            throw new ApiError(401, "Invalid Refresh Token")
+        }
+    
+        if(incomingRefreshToken != user?.refreshToken)
+        {
+            throw new ApiError(401, "Refresh Token is expired or used")
+        }
+    
+        const options = 
+        {
+            httpOnly: true,
+            secure: true
+        }
+    
+        const {newAccessToken, newRefreshToken} = generateTokens(user._id)
+        return res.status(200).cookie("accessToken",newAccessToken, options).cookie("refreshToken", newRefreshToken, options)
+        .json(new ApiResponse(200, {newAccessToken,newRefreshToken}, "Access Token Refreshed Successfully")
+        )
+    } catch (error) {
+        throw new ApiError(401, error?.message || "Invalid Refresh Token")
+    }
+
+})
+
+
+
 //export const registerUser
-export {registerUser, loginUser, logoutUser} //this works
+export {registerUser, loginUser, logoutUser, refreshAccessToken} //this works
 
 /**
  * the reason was that we wrote const after export which meant that the statement
