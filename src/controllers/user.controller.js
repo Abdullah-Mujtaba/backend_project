@@ -6,6 +6,7 @@ import {uploadOnCloundinary} from "../utils/cloundnary.js"
 import { User } from "../models/user.models.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
+import { upload } from "../middlewares/multer.middleware.js";
 
 
 const generateTokens = async function(userId)
@@ -241,9 +242,120 @@ const refreshAccessToken = asyncHandler(async (req,res) =>
 })
 
 
+const changeCurrentPassword = asyncHandler(async (req,res) => 
+{
+    //no need to verify if the user is logged in or not we have a middleware for that
+    const {OldPassword, newPassword, confirmPassword} = req.body
+    console.log(OldPassword)
+    if(newPassword != confirmPassword)
+    {
+        throw new ApiError(400,"New password and Confirm password fields dont match")
+    }
+
+    const user = await User.findById(req.user?._id)
+    const isPasswordCorrect = await user.isPasswordCorrect(OldPassword)
+    if(!isPasswordCorrect)
+    {
+        throw new ApiError(400, "Old Password is Incorrect")
+    }
+
+    user.password = newPassword
+    //await because DB call
+    await user.save({validateBeforeSave: false}) //wont ask for every field
+
+    return res.status(200).json(new ApiResponse(200,user, "Password Changed Successfully"))
+})  
+
+
+const getCurrentUser = asyncHandler(async (req,res) => 
+{
+    const currentUser = req.user
+    return res.status(200).json(new ApiResponse(200, currentUser, "User Fetched Successfully")) //second field in json res is the data that we want to return 
+    //third field is the message that we want to send !!!!!!!NOT SURE BOUT THIS!!!!!
+})
+
+const updateUser = asyncHandler(async (req,res) => 
+{
+    //note that these fields should be also same in postman
+    const {newFullName, newEmail} = req.body
+    if(!newFullName || !newEmail)
+    {
+        throw new ApiError(400, "fullname and email not valid")
+    }
+    const user = await User.findByIdAndUpdate(req.user?._id, 
+        {
+            $set : {fullName: newFullName, email: newEmail}
+        },
+        {
+            new:true
+        }    
+    ).select("-password") 
+    //DB calls are expensive due to DB being in another place so tone them down as much as we can
+
+    return res.status(200).json(new ApiResponse(200, user, "Account details successfully"))
+    
+
+
+})
+
+
+//to accept files we need to use multer 
+const updateUserAvatar = asyncHandler(async (req,res) => 
+{
+    //we are using file instead of files because we are only giving one option for uploading the file
+    const newAvatarLocalPath = req.file?.path; //filepath of the new avatar that the user
+    //has uploaded
+    if(!newAvatarLocalPath)
+    {
+        throw new ApiError(400, "Avatar file is missing")
+    }
+
+    const newAvatar = await uploadOnCloundinary(newAvatarLocalPath)
+    if(!newAvatar.url)
+    {
+        throw new ApiError(400, "Error while uploading avatar")
+    }
+
+    const user = await User.findByIdAndUpdate(req.user?._id,
+        {
+            $set: {avatar: newAvatar.url} //setting url because in the DB we are saving that
+        },
+        {
+            new:true
+        }).select("-password")
+    
+    return res.status(200).json(new ApiResponse(200,user,"Avatar changed successfully"))
+
+})
+
+const updateCoverImage = asyncHandler( async (req,res) => 
+{
+    const newCoverImageLocalPath = req.files?.path
+    if(!newCoverImageLocalPath)
+    {
+        throw new ApiError(400,"coverImage is missing")
+    }    
+
+    const newCoverImage = await uploadOnCloundinary(newCoverImage)
+
+    if(!newCoverImage.url)
+    {
+        throw new ApiError(400, "Error uploading on cloudinary")
+    }
+
+    const user = await User.findByIdAndUpdate(req.user._id,
+    {
+        $set: {coverImage: newCoverImage.url}
+    },
+    {
+        new: true
+    }).select("-password")
+
+    return res.status(200).json(new ApiResponse(200,user, "Cover Image uploaded succesfully"))
+})
 
 //export const registerUser
-export {registerUser, loginUser, logoutUser, refreshAccessToken} //this works
+export {registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateUser, updateUserAvatar, updateCoverImage} //this works
 
 /**
  * the reason was that we wrote const after export which meant that the statement

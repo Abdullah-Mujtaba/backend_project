@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { loginUser, logoutUser, registerUser, refreshAccessToken } from "../controllers/user.controller.js";
+import {registerUser, loginUser, logoutUser, refreshAccessToken, changeCurrentPassword, getCurrentUser, updateUser, updateUserAvatar, updateCoverImage} from "../controllers/user.controller.js";
 import {upload} from "../middlewares/multer.middleware.js"
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 const router = Router()
@@ -35,6 +35,9 @@ router.route("/logout").post(
     //in middlewares that we have made we just pass the reference
 )
 
+router.route("/update-user").post(verifyJWT,updateUser)
+router.route("/change-password").post(verifyJWT,changeCurrentPassword )
+router.route("/get-user").post(verifyJWT, getCurrentUser)
 router.route("/refresh-token").post(refreshAccessToken)
 
 export default router

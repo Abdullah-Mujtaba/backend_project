@@ -97,3 +97,21 @@ Security: Important to use flags like HttpOnly, Secure, SameSite for protecting 
 the reason we got this error was Cannot destructure property 'username' of 'req.body' as it is undefined.
 this was happening becuase we were sending form data which we did not use in login we plainly sent json data
 to enable form data we have to use multer a middleware which helps in that
+
+
+
+************UPDATE*************
+keep file updates seperate from the user detail updates because 
+if we dont do that the text data will be sent again and again and that can
+cause increase in network congestion
+
+
+
+
+*********TESTING NOTES*************
+inORder to change password or to check all the secured routes that we have made which have the jwtverify middleware in order to check those through postman we have to login first and then we can
+test that functionality because jwtverify takes cookies and is putting user in req.user that way so we need to do that if we dont do that then the error we will get is unauthorized request
+because the user is not logged in and we have no cookies or accessTokens and becuase of that there is no user in req.user which is causing the issue
+------
+//note that these fields should be also same in postman
+const {newFullName, newEmail} = req.body
